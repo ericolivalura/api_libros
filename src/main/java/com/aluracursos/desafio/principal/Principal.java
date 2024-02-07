@@ -5,10 +5,7 @@ import com.aluracursos.desafio.model.DatosLibros;
 import com.aluracursos.desafio.service.ConsumoAPI;
 import com.aluracursos.desafio.service.ConvierteDatos;
 
-import java.util.Comparator;
-import java.util.DoubleSummaryStatistics;
-import java.util.Optional;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
@@ -25,6 +22,7 @@ public class Principal {
             1- buscar libro por título
             2- top 10 libros más descargados
             3- exhibir estadísticas de descargas
+            4- buscar un autor
             0 - salir
             """;
 
@@ -43,11 +41,22 @@ public class Principal {
                 case 1 -> buscarLibroPorTitulo();
                 case 2 -> listarTop10LibrosMasDescargados();
                 case 3 -> exhibirEstadisticasDeDescargas();
+                case 4 -> buscarAutor();
                 case 0 -> System.out.println("Hasta luego...");
-                default -> opcionElegida = -1;
+                default -> System.out.println("Opcion invalida");
             }
         }
 
+    }
+
+    private void buscarAutor() {
+        System.out.println("Ingrese el nombre del autor que desea buscar");
+        var nombreAutor = teclado.nextLine();
+        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + nombreAutor.replace(" ", "+"));
+        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
+        Optional<DatosLibros> first = datosBusqueda.resultados().stream().filter(l -> l.autor().get(0).nombre().toUpperCase().contains(nombreAutor.toUpperCase())).findFirst();
+        DatosLibros datosLibros = encontrarLibro(first);
+        System.out.println(datosLibros.autor());
     }
 
 
@@ -88,12 +97,13 @@ public class Principal {
         encontrarLibro(libroBuscado);
     }
 
-    private void encontrarLibro(Optional<DatosLibros> libroBuscado) {
+    private DatosLibros encontrarLibro(Optional<DatosLibros> libroBuscado) {
         if (libroBuscado.isPresent()) {
             System.out.println("Libro Encontrado ");
-            System.out.println(libroBuscado.get());
+            return libroBuscado.get();
         } else {
             System.out.println("Libro no encontrado");
+            return null;
         }
     }
 
