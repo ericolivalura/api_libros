@@ -2,14 +2,18 @@ package com.aluracursos.desafio.principal;
 
 import com.aluracursos.desafio.model.Datos;
 import com.aluracursos.desafio.model.DatosLibros;
+import com.aluracursos.desafio.repository.BookRepository;
 import com.aluracursos.desafio.service.ConsumoAPI;
 import com.aluracursos.desafio.service.ConvierteDatos;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class Principal {
     private static final String URL_BASE = "https://gutendex.com/books/";
+    @Autowired
+    private final BookRepository repositorio;
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
@@ -25,6 +29,11 @@ public class Principal {
             4- buscar un autor
             0 - salir
             """;
+
+    public Principal(BookRepository repositorio) {
+        this.repositorio = repositorio;
+
+    }
 
     public void muestraElMenu() {
 
