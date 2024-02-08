@@ -28,9 +28,6 @@ public class Principal {
 
     public void muestraElMenu() {
 
-        //System.out.println(json);
-        //var datos = conversor.obtenerDatos(json,Datos.class);
-        //System.out.println(datos);
         var opcionElegida = -1;
         while (opcionElegida != 0) {
             json = consumoAPI.obtenerDatos(URL_BASE);
@@ -94,7 +91,8 @@ public class Principal {
         Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
                 .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
-        encontrarLibro(libroBuscado);
+        DatosLibros datosLibros = encontrarLibro(libroBuscado);
+        System.out.println(datosLibros);
     }
 
     private DatosLibros encontrarLibro(Optional<DatosLibros> libroBuscado) {
