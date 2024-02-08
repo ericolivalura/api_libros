@@ -2,6 +2,7 @@ package com.aluracursos.desafio.principal;
 
 import com.aluracursos.desafio.model.Datos;
 import com.aluracursos.desafio.model.DatosLibros;
+import com.aluracursos.desafio.model.Libro;
 import com.aluracursos.desafio.repository.BookRepository;
 import com.aluracursos.desafio.service.ConsumoAPI;
 import com.aluracursos.desafio.service.ConvierteDatos;
@@ -104,16 +105,26 @@ public class Principal {
                 .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
         encontrarLibro(libroBuscado);
+
     }
 
-    private DatosLibros encontrarLibro(Optional<DatosLibros> libroBuscado) {
-        if (libroBuscado.isPresent()) {
-            System.out.println("Libro Encontrado ");
-            return libroBuscado.get();
-        } else {
-            System.out.println("Libro no encontrado");
-            return null;
+    private void encontrarLibro(Optional<DatosLibros> libroBuscado) {
+        DatosLibros datos = getDatosLibro();
+        if(datos.titulo() != null){
+            Libro libro = new Libro();
+            repositorio.save(libro);
         }
+    }
+
+    private DatosLibros getDatosLibro(){
+        System.out.println("Ingrese el nombre del libro que desea buscar");
+        var tituloLibro = teclado.nextLine();
+        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
+        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
+        Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
+                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
+                .findFirst();
+        encontrarLibro(libroBuscado);
     }
 
 }

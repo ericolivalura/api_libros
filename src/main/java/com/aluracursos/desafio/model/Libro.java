@@ -18,7 +18,7 @@ public class Libro {
 
     public Libro(DatosLibros datosLibros) {
         this.titulo = datosLibros.titulo();
-        this.autor = new Autor(datosLibros.autor());
+        this.autor = new Autor(datosLibros.autor().get(0));
         this.idiomas = datosLibros.idiomas();
         this.numeroDeDescargas = datosLibros.numeroDeDescargas();
     }

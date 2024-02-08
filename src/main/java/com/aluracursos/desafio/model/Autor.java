@@ -18,9 +18,9 @@ public class Autor {
     @ManyToOne
     private Libro libro;
 
-    public Autor(List<DatosAutor> datosAutor) {
-        this.nombre = String.valueOf(datosAutor.get(0));
-        this.fechaDeNacimiento = datosAutor.get(1);
+    public Autor(DatosAutor datosAutor) {
+        this.nombre = String.valueOf(datosAutor.nombre());
+        this.fechaDeNacimiento = LocalDate.parse(datosAutor.fechaDeNacimiento());
     }
 
     public String getNombre() {
@@ -31,11 +31,19 @@ public class Autor {
         this.nombre = nombre;
     }
 
-    public String getFechaDeNacimiento() {
+    public LocalDate getFechaDeNacimiento() {
         return fechaDeNacimiento;
     }
 
-    public void setFechaDeNacimiento(String fechaDeNacimiento) {
+    public void setFechaDeNacimiento(LocalDate fechaDeNacimiento) {
         this.fechaDeNacimiento = fechaDeNacimiento;
+    }
+
+    public Libro getLibro() {
+        return libro;
+    }
+
+    public void setLibro(Libro libro) {
+        this.libro = libro;
     }
 }
