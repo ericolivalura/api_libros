@@ -1,8 +1,7 @@
 package com.aluracursos.desafio.principal;
 
-import com.aluracursos.desafio.model.Datos;
-import com.aluracursos.desafio.model.DatosLibros;
-import com.aluracursos.desafio.model.Libro;
+import com.aluracursos.desafio.model.*;
+import com.aluracursos.desafio.repository.AutorRepository;
 import com.aluracursos.desafio.repository.BookRepository;
 import com.aluracursos.desafio.service.ConsumoAPI;
 import com.aluracursos.desafio.service.ConvierteDatos;
@@ -15,6 +14,8 @@ public class Principal {
     private static final String URL_BASE = "https://gutendex.com/books/";
     @Autowired
     private final BookRepository repositorio;
+    @Autowired
+    private final AutorRepository autorRepository;
     private ConsumoAPI consumoAPI = new ConsumoAPI();
     private ConvierteDatos conversor = new ConvierteDatos();
     private Scanner teclado = new Scanner(System.in);
@@ -26,14 +27,17 @@ public class Principal {
             Elija la opción a través de su número:
             1- buscar libro por título
             2- top 10 libros más descargados
-            3- exhibir estadísticas de descargas
+            3- exhibir estadísticas de descargas totales
             4- buscar un autor
+            5- listar libros registrados
+            6- exhibir estadísticas de descargas de los libros registrados
+            7- listar autores registrados
             0 - salir
             """;
 
-    public Principal(BookRepository repositorio) {
+    public Principal(BookRepository repositorio, AutorRepository autorRepository) {
         this.repositorio = repositorio;
-
+        this.autorRepository = autorRepository;
     }
 
     public void muestraElMenu() {
@@ -52,6 +56,9 @@ public class Principal {
                 case 2 -> listarTop10LibrosMasDescargados();
                 case 3 -> exhibirEstadisticasDeDescargas();
                 case 4 -> buscarAutor();
+                case 5 -> listarLibrosRegistrados();
+                case 6 -> exhibirEstadisticasDeDescargasDeLosLibrosRegistrados();
+                case 7 -> listarAutoresRegistrados();
                 case 0 -> System.out.println("Hasta luego...");
                 default -> System.out.println("Opcion invalida");
             }
@@ -59,14 +66,19 @@ public class Principal {
 
     }
 
+    private void listarAutoresRegistrados() {
+       autorRepository.findAll().forEach(System.out::println);
+    }
+
+    private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
+        //a implementar
+    }
+
     private void buscarAutor() {
         System.out.println("Ingrese el nombre del autor que desea buscar");
         var nombreAutor = teclado.nextLine();
-        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + nombreAutor.replace(" ", "+"));
-        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
-        Optional<DatosLibros> first = datosBusqueda.resultados().stream().filter(l -> l.autor().get(0).nombre().toUpperCase().contains(nombreAutor.toUpperCase())).findFirst();
-        DatosLibros datosLibros = encontrarLibro(first);
-        System.out.println(datosLibros.autor());
+        List<Autor> autores = autorRepository.findFirstByNombreContainingIgnoreCase(nombreAutor);
+        autores.stream().forEach(System.out::println);
     }
 
 
@@ -97,26 +109,30 @@ public class Principal {
     }
 
     private void buscarLibroPorTitulo() {
-        System.out.println("Ingrese el nombre del libro que desea buscar");
-        var tituloLibro = teclado.nextLine();
-        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
-        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
-        Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
-                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
-                .findFirst();
-        encontrarLibro(libroBuscado);
-
-    }
-
-    private void encontrarLibro(Optional<DatosLibros> libroBuscado) {
         DatosLibros datos = getDatosLibro();
-        if(datos.titulo() != null){
-            Libro libro = new Libro();
+        if (datos.titulo() != null) {
+            DatosAutor autor = datos.autor().get(0);
+            Autor autorExistente = autorRepository.findByNombre(autor.nombre());
+
+            Libro libro;
+            if(autorExistente != null){
+                System.out.println(autorExistente);
+                libro = new Libro();
+                libro.setTitulo(datos.titulo());
+                libro.setIdiomas(datos.idiomas());
+                libro.setNumeroDeDescargas(datos.numeroDeDescargas());
+                libro.setAutor(autorExistente);
+            }
+            else {
+                libro = new Libro(datos);
+            }
             repositorio.save(libro);
+            System.out.println(libro);
         }
+
     }
 
-    private DatosLibros getDatosLibro(){
+    private DatosLibros getDatosLibro() {
         System.out.println("Ingrese el nombre del libro que desea buscar");
         var tituloLibro = teclado.nextLine();
         json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
@@ -124,7 +140,15 @@ public class Principal {
         Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
                 .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
                 .findFirst();
-        encontrarLibro(libroBuscado);
+        if (libroBuscado.isPresent()) {
+            DatosLibros datosLibros = libroBuscado.get();
+            return datosLibros;
+        }
+        return null;
+    }
+
+    private void listarLibrosRegistrados() {
+        repositorio.findAll().stream().forEach(System.out::println);
     }
 
 }

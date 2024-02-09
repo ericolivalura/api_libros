@@ -1,6 +1,7 @@
 package com.aluracursos.desafio;
 
 import com.aluracursos.desafio.principal.Principal;
+import com.aluracursos.desafio.repository.AutorRepository;
 import com.aluracursos.desafio.repository.BookRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -13,6 +14,9 @@ public class DesafioApplication implements CommandLineRunner {
 	@Autowired
 	private BookRepository repositorio;
 
+	@Autowired
+	private AutorRepository autorRepository;
+
 
 	public static void main(String[] args) {
 		SpringApplication.run(DesafioApplication.class, args);
@@ -20,7 +24,7 @@ public class DesafioApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		Principal principal = new Principal(repositorio);
+		Principal principal = new Principal(repositorio, autorRepository);
 		principal.muestraElMenu();
 
 	}

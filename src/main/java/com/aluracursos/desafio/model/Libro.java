@@ -11,7 +11,7 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    @OneToMany(mappedBy = "libro", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ManyToOne
     private Autor autor;
     private List<String> idiomas;
     private Double numeroDeDescargas;
@@ -36,6 +36,22 @@ public class Libro {
 
     public Autor getAutor() {
         return autor;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public void setAutor(Autor autor) {
+        this.autor = autor;
+    }
+
+    public void setIdiomas(List<String> idiomas) {
+        this.idiomas = idiomas;
+    }
+
+    public void setNumeroDeDescargas(Double numeroDeDescargas) {
+        this.numeroDeDescargas = numeroDeDescargas;
     }
 
     public List<String> getIdiomas() {
