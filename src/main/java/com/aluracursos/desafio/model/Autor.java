@@ -17,14 +17,15 @@ public class Autor {
     private Long id;
     private String nombre;
     private Year fechaDeNacimiento;
+    private Year fechaDeFallecimiento;
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Libro> libros = new ArrayList<>();
 
-
     public Autor(DatosAutor datosAutor) {
         this.nombre = String.valueOf(datosAutor.nombre());
         this.fechaDeNacimiento = Year.parse(datosAutor.fechaDeNacimiento());
+        this.fechaDeFallecimiento = Year.parse(datosAutor.fechaDeFallecimiento());
     }
 
     public Autor() {
@@ -45,6 +46,13 @@ public class Autor {
     public void setFechaDeNacimiento(LocalDate fechaDeNacimiento) {
         this.fechaDeNacimiento = Year.from(fechaDeNacimiento);
     }
+    public Year getFechaDeFallecimiento() {
+        return fechaDeFallecimiento;
+    }
+
+    public void setFechaDeFallecimiento(LocalDate fechaDeFallecimiento) {
+        this.fechaDeFallecimiento = Year.from(fechaDeFallecimiento);
+    }
 
     public Long getId() {
         return id;
@@ -61,9 +69,11 @@ public class Autor {
     @Override
     public String toString() {
         return "Autor{" +
-                "nombre='" + nombre + '\'' +
+                "id=" + id +
+                ", nombre='" + nombre + '\'' +
                 ", fechaDeNacimiento=" + fechaDeNacimiento +
-                ", libros=" + getNombreDeLibro() +
+                ", fechaDeFallecimiento=" + fechaDeFallecimiento +
+                ", libros=" + libros +
                 '}';
     }
 }
