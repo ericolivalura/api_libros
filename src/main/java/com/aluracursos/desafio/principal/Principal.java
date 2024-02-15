@@ -77,7 +77,7 @@ public class Principal {
        autorRepository.findAll().forEach(
                autor -> {
                    System.out.println(
-                           "Autor: " + autor.getNombre() +
+                           "\n Autor: " + autor.getNombre() +
                            "\n Fecha de nacimiento: " + autor.getFechaDeNacimiento() +
                            "\n Fecha de fallecimiento: " + autor.getFechaDeFallecimiento() + "\n"
                    );
@@ -85,7 +85,30 @@ public class Principal {
     }
 
     private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
-        //a implementar
+//        DoubleSummaryStatistics est = repositorio.findAll().stream().filter(d -> d.getNumeroDeDescargas() > 0)
+//                .collect(Collectors.summarizingDouble(Libro::getNumeroDeDescargas));
+//        System.out.println("Cantidad media de descargas: %.2f" + est.getAverage());
+//        System.out.println("Cantidad máxima de descargas: %.2f" + est.getMax());
+//        System.out.println("Cantidad mínima de descargas: %.2f" + est.getMin());
+//        System.out.println("Cantidad de registros evaluados para calcular las estadisticas: " + est.getCount());
+
+        // Cantidad de libros por idiomas
+        Map<List<String>, Long> librosPorIdioma = repositorio.findAll().stream()
+                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.counting()
+                        ));
+
+        System.out.println("Cantidad de libros por idiomas");
+        librosPorIdioma.forEach((idioma, totalLibros) ->
+                System.out.println(idioma + ": " + totalLibros)); //
+
+        // Cantidad de descargas por idiomas
+        Map<List<String>, Double> descargasPorIdioma = repositorio.findAll().stream()
+                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.summingDouble(Libro::getNumeroDeDescargas)
+                ));
+
+        System.out.println("Cantidad de libros descargados por idiomas");
+        descargasPorIdioma.forEach((idioma, totalDescargas) ->
+                System.out.println(idioma + ": " + totalDescargas));
     }
 
     private void buscarAutor() {
@@ -142,6 +165,8 @@ public class Principal {
             }
             repositorio.save(libro);
             System.out.println(libro);
+        } else {
+            System.out.println("Libro no encontrado. Le sugiero que compruebe si escribió el título del libro correctamente e intente otra vez.");
         }
 
     }
@@ -165,12 +190,12 @@ public class Principal {
         repositorio.findAll().stream().forEach(
                 libro -> {
                     System.out.println(
-                                    "----- LIBRO -----\n" +
-                                    "Titulo: " + libro.getTitulo() +
+                                    "----- LIBRO -----" +
+                                    "\n Titulo: " + libro.getTitulo() +
                                     "\n Autor: " + libro.getAutor().getNombre() +
                                     "\n Idiomas: " + libro.getIdiomas() +
                                     "\n Numero de descargas: " + libro.getNumeroDeDescargas() +
-                                    "-----------------\n"
+                                    "\n-----------------\n"
                     );
                 }
         );
@@ -199,7 +224,7 @@ public class Principal {
     }
 
     private void listarAutoresVivosEnAnoEspecifico(){
-        System.out.println("Ingrese el año vivo del autor(es) que desea buscar");
+        System.out.println("Ingrese el año vivo de autor(es) que desea buscar");
         var anoVivo = teclado.nextLine();
         Year anoVivoConvertido = Year.parse(anoVivo);
 

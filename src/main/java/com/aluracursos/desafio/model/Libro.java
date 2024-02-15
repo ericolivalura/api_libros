@@ -11,8 +11,7 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    @ManyToOne(cascade=CascadeType.PERSIST)
-    @JoinColumn(name="autor_id")
+    @ManyToOne
     private Autor autor;
     private List<String> idiomas;
     private Double numeroDeDescargas;
