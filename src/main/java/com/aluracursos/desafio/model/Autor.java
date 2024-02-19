@@ -2,8 +2,6 @@ package com.aluracursos.desafio.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
-import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,16 +14,16 @@ public class Autor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nombre;
-    private Year fechaDeNacimiento;
-    private Year fechaDeFallecimiento;
+    private Integer fechaDeNacimiento;
+    private Integer fechaDeFallecimiento;
 
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Libro> libros = new ArrayList<>();
 
     public Autor(DatosAutor datosAutor) {
         this.nombre = String.valueOf(datosAutor.nombre());
-        this.fechaDeNacimiento = Year.parse(datosAutor.fechaDeNacimiento());
-        this.fechaDeFallecimiento = Year.parse(datosAutor.fechaDeFallecimiento());
+        this.fechaDeNacimiento = Integer.valueOf(datosAutor.fechaDeNacimiento());
+        this.fechaDeFallecimiento = Integer.valueOf(datosAutor.fechaDeFallecimiento());
     }
 
     public Autor() {
@@ -35,31 +33,20 @@ public class Autor {
         return nombre;
     }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public Year getFechaDeNacimiento() {
+    public Integer getFechaDeNacimiento() {
         return fechaDeNacimiento;
     }
 
-    public void setFechaDeNacimiento(LocalDate fechaDeNacimiento) {
-        this.fechaDeNacimiento = Year.from(fechaDeNacimiento);
-    }
-    public Year getFechaDeFallecimiento() {
+    public Integer getFechaDeFallecimiento() {
         return fechaDeFallecimiento;
     }
 
-    public void setFechaDeFallecimiento(LocalDate fechaDeFallecimiento) {
-        this.fechaDeFallecimiento = Year.from(fechaDeFallecimiento);
+    public List<Libro> getLibros() {
+        return libros;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     private List<String> getNombreDeLibro(){
@@ -73,7 +60,7 @@ public class Autor {
                 ", nombre='" + nombre + '\'' +
                 ", fechaDeNacimiento=" + fechaDeNacimiento +
                 ", fechaDeFallecimiento=" + fechaDeFallecimiento +
-                ", libros=" + libros +
+                ", libros=" + getNombreDeLibro() +
                 '}';
     }
 }

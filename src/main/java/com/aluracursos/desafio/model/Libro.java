@@ -11,7 +11,7 @@ public class Libro {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    @ManyToOne
+    @ManyToOne()
     private Autor autor;
     private List<String> idiomas;
     private Double numeroDeDescargas;
