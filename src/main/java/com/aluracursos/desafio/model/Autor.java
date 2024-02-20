@@ -33,34 +33,20 @@ public class Autor {
         return nombre;
     }
 
-    public Integer getFechaDeNacimiento() {
-        return fechaDeNacimiento;
-    }
-
-    public Integer getFechaDeFallecimiento() {
-        return fechaDeFallecimiento;
-    }
-
-    public List<Libro> getLibros() {
-        return libros;
-    }
-
     public Long getId() {
         return id;
     }
 
-    private List<String> getNombreDeLibro(){
+    private List<String> getNombreDeLibro() {
         return libros.stream().map(Libro::getTitulo).collect(Collectors.toList());
     }
 
     @Override
     public String toString() {
-        return "Autor{" +
-                "id=" + id +
-                ", nombre='" + nombre + '\'' +
-                ", fechaDeNacimiento=" + fechaDeNacimiento +
-                ", fechaDeFallecimiento=" + fechaDeFallecimiento +
-                ", libros=" + getNombreDeLibro() +
-                '}';
+        return "\n Autor: " + nombre +
+                "\n Fecha de nacimiento: " + fechaDeNacimiento +
+                "\n Fecha de fallecimiento: " + fechaDeFallecimiento +
+                "\n Libros: " + getNombreDeLibro()
+                ;
     }
 }

@@ -10,20 +10,21 @@ public class Libro {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String titulo;
     @ManyToOne()
     private Autor autor;
     private List<String> idiomas;
     private Double numeroDeDescargas;
 
-    public Libro(DatosLibros datosLibros) {
-        this.titulo = datosLibros.titulo();
-        this.autor = new Autor(datosLibros.autor().get(0));
-        this.idiomas = datosLibros.idiomas();
-        this.numeroDeDescargas = datosLibros.numeroDeDescargas();
+    public Libro() {
     }
 
-    public Libro() {
+    public Libro(DatosLibros datos, Autor autor) {
+        this.titulo = datos.titulo();
+        this.autor = autor;
+        this.idiomas = datos.idiomas();
+        this.numeroDeDescargas = datos.numeroDeDescargas();
     }
 
     public Long getId() {
@@ -32,26 +33,6 @@ public class Libro {
 
     public String getTitulo() {
         return titulo;
-    }
-
-    public Autor getAutor() {
-        return autor;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public void setAutor(Autor autor) {
-        this.autor = autor;
-    }
-
-    public void setIdiomas(List<String> idiomas) {
-        this.idiomas = idiomas;
-    }
-
-    public void setNumeroDeDescargas(Double numeroDeDescargas) {
-        this.numeroDeDescargas = numeroDeDescargas;
     }
 
     public List<String> getIdiomas() {
@@ -64,12 +45,11 @@ public class Libro {
 
     @Override
     public String toString() {
-        return "Libro{" +
-                "id=" + id +
-                ", titulo='" + titulo + '\'' +
-                ", autor=" + autor.getNombre() +
-                ", idiomas=" + idiomas +
-                ", numeroDeDescargas=" + numeroDeDescargas +
-                '}';
+        return "----- LIBRO -----" +
+                "\n Titulo: " + titulo +
+                "\n Autor: " + autor.getNombre() +
+                "\n Idiomas: " + idiomas +
+                "\n Numero de descargas: " + numeroDeDescargas +
+                "\n-----------------\n";
     }
 }
