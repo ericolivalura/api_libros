@@ -16,7 +16,7 @@ public class Principal {
     @Autowired
     private final LibroRepository repositorio;
     @Autowired
-    private final AutorRepository autorRepository;
+    private final AutorRepository autorRepositorio;
 
     private static final String URL_BASE = "https://gutendex.com/books/";
     private ConsumoAPI consumoAPI = new ConsumoAPI();
@@ -42,7 +42,7 @@ public class Principal {
 
     public Principal(LibroRepository repositorio, AutorRepository autorRepository) {
         this.repositorio = repositorio;
-        this.autorRepository = autorRepository;
+        this.autorRepositorio = autorRepository;
     }
 
     public void muestraElMenu() {
@@ -75,7 +75,7 @@ public class Principal {
         DatosLibros datos = getDatosLibro();
         if (datos != null) {
             DatosAutor autor = datos.autor().get(0);
-            Autor autorExistente = autorRepository.findByNombre(autor.nombre());
+            Autor autorExistente = autorRepositorio.findByNombre(autor.nombre());
 
             Libro libro;
             if (autorExistente != null) {
@@ -93,7 +93,7 @@ public class Principal {
                 libro.setIdiomas(datos.idiomas());
                 libro.setNumeroDeDescargas(datos.numeroDeDescargas());
                 libro.setAutor(nuevoAutor);
-                autorRepository.save(nuevoAutor);
+                autorRepositorio.save(nuevoAutor);
                 repositorio.save(libro);
             }
             System.out.println(libro);
@@ -105,14 +105,20 @@ public class Principal {
     private DatosLibros getDatosLibro() {
         System.out.println("Ingrese el nombre del libro que desea buscar");
         var tituloLibro = teclado.nextLine();
-        json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
-        var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
-        Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
-                .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
-                .findFirst();
-        if (libroBuscado.isPresent()) {
-            return libroBuscado.get();
+
+        if(!tituloLibro.isBlank()){
+            json = consumoAPI.obtenerDatos(URL_BASE + "?search=" + tituloLibro.replace(" ", "+"));
+            var datosBusqueda = conversor.obtenerDatos(json, Datos.class);
+            Optional<DatosLibros> libroBuscado = datosBusqueda.resultados().stream()
+                    .filter(l -> l.titulo().toUpperCase().contains(tituloLibro.toUpperCase()))
+                    .findFirst();
+            if (libroBuscado.isPresent()) {
+                return libroBuscado.get();
+            }
+        } else {
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un texto válido.");
         }
+
         return null;
     }
 
@@ -141,12 +147,17 @@ public class Principal {
     private void buscarAutor() {
         System.out.println("Ingrese el nombre del autor que desea buscar");
         var nombreAutor = teclado.nextLine();
-        List<Autor> autores = autorRepository.findAllByNombreContainingIgnoreCase(nombreAutor);
 
-        if (!autores.isEmpty()) {
-            autores.forEach(System.out::println);
+        if(!nombreAutor.isBlank()){
+            List<Autor> autores = autorRepositorio.findAllByNombreContainingIgnoreCase(nombreAutor);
+
+            if (!autores.isEmpty()) {
+                autores.forEach(System.out::println);
+            } else {
+                System.out.println("No existen autores con este nombre en nuestra base de datos");
+            }
         } else {
-            System.out.println("No existen autores con este nombre en nuestra base de datos");
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un texto válido.");
         }
     }
 
@@ -164,7 +175,7 @@ public class Principal {
     }
 
     private void listarAutoresRegistrados() {
-        autorRepository.findAll().forEach(
+        autorRepositorio.findAll().forEach(
                 autor -> System.out.println(
                         "\n Autor: " + autor.getNombre() +
                                 "\n Fecha de nacimiento: " + autor.getFechaDeNacimiento() +
@@ -176,16 +187,14 @@ public class Principal {
         return conversor.obtenerDatos(json, Datos.class);
     }
 
-
-
     /* Consultas con fechas (Autores) */
 
     private void listarAutoresPorAnoDeNacimiento() {
         System.out.println("Ingrese el año de nacimiento del autor(es) que desea buscar");
-        var anoNacimiento = Integer.valueOf(teclado.nextLine());
+        var anoNacimiento = teclado.nextLine();
 
-        if (anoNacimiento != null) {
-            List<Autor> autoresBuscados = autorRepository.findByFechaDeNacimiento(anoNacimiento);
+        if(!anoNacimiento.isBlank()){
+            List<Autor> autoresBuscados = autorRepositorio.findByFechaDeNacimiento(Integer.valueOf(anoNacimiento));
 
             if (!autoresBuscados.isEmpty()) {
                 autoresBuscados.forEach(autor -> System.out.println(autor.toString()));
@@ -193,16 +202,18 @@ public class Principal {
                 System.out.println("No se han encontrado autores nacidos este año.");
             }
         } else {
-            System.out.println("Formato de año no válido. Introduzca un valor entero (positivo o negativo)");
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
     }
 
     private void listarAutoresVivosEnAnoEspecifico() {
         System.out.println("Ingrese el año vivo de autor(es) que desea buscar");
-        var anoVivo = Integer.valueOf(teclado.nextLine());
+        var anoVivo = teclado.nextLine();
 
-        if (anoVivo != null) {
-            List<Autor> autoresBuscados = autorRepository.findByFechaDeNacimientoLessThanEqualAndFechaDeFallecimientoGreaterThan(anoVivo, anoVivo);
+        if(!anoVivo.isBlank()){
+            List<Autor> autoresBuscados = autorRepositorio.findByFechaDeNacimientoLessThanEqualAndFechaDeFallecimientoGreaterThan(
+                    Integer.valueOf(anoVivo),
+                    Integer.valueOf(anoVivo));
 
             if (!autoresBuscados.isEmpty()) {
                 autoresBuscados.forEach(autor -> System.out.println(autor.toString()));
@@ -210,19 +221,20 @@ public class Principal {
                 System.out.println("No se han encontrado autores vivos este año.");
             }
         } else {
-            System.out.println("Formato de año no válido. Introduzca un valor entero (positivo o negativo)");
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
     }
 
     private void listarAutoresPorIntervaloDeAnos() {
         System.out.println("Ingrese el año inicial del intervalo");
-        var anoInicial = Integer.valueOf(teclado.nextLine());
+        var anoInicial = teclado.nextLine();
 
         System.out.println("Ingrese el año final del intervalo");
-        var anoFinal = Integer.valueOf(teclado.nextLine());
+        var anoFinal = teclado.nextLine();
 
-        if (anoInicial != null && anoFinal != null) {
-            List<Autor> autoresBuscados = autorRepository.findByFechaDeNacimientoGreaterThanEqualAndFechaDeFallecimientoLessThan(anoInicial, anoFinal);
+        if(!(anoInicial.isBlank() || anoFinal.isBlank())){
+            List<Autor> autoresBuscados = autorRepositorio.findByFechaDeNacimientoGreaterThanEqualAndFechaDeFallecimientoLessThan(
+                    Integer.valueOf(anoInicial), Integer.valueOf(anoFinal));
 
             if (!autoresBuscados.isEmpty()) {
                 autoresBuscados.forEach(autor -> System.out.println(autor.toString()));
@@ -230,18 +242,11 @@ public class Principal {
                 System.out.println("No se han encontrado autores vivos en este intervalo de años.");
             }
         } else {
-            System.out.println("Formato de año no válido. Introduzca un valor entero (positivo o negativo)");
+            System.out.println("Campo(s) de texto vacío(s), por favor, inténtelo de nuevo e ingrese un numero entero válido en cada campo.");
         }
     }
 
     private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
-//        DoubleSummaryStatistics est = repositorio.findAll().stream().filter(d -> d.getNumeroDeDescargas() > 0)
-//                .collect(Collectors.summarizingDouble(Libro::getNumeroDeDescargas));
-//        System.out.println("Cantidad media de descargas: %.2f" + est.getAverage());
-//        System.out.println("Cantidad máxima de descargas: %.2f" + est.getMax());
-//        System.out.println("Cantidad mínima de descargas: %.2f" + est.getMin());
-//        System.out.println("Cantidad de registros evaluados para calcular las estadisticas: " + est.getCount());
-
         // Cantidad de libros por idiomas
         Map<List<String>, Long> librosPorIdioma = repositorio.findAll().stream()
                 .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.counting()
