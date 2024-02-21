@@ -31,7 +31,7 @@ public class Principal {
             2- listar libros registrados
             3- listar autores registrados
             4- listar autores vivos en un determinado año
-            5- exhibir estadísticas de descargas de los libros registrados
+            5- listar libros por idioma
             0 - salir
             """;
 
@@ -53,7 +53,7 @@ public class Principal {
                 case 2 -> listarLibrosRegistrados();
                 case 3 -> listarAutoresRegistrados();
                 case 4 -> listarAutoresVivosEnAnoEspecifico();
-                case 5 -> exhibirEstadisticasDeDescargasDeLosLibrosRegistrados();
+                case 5 -> listarLibrosPorIdioma();
                 case 0 -> System.out.println("Hasta luego...");
                 default -> System.out.println("Opcion invalida");
             }
@@ -113,8 +113,6 @@ public class Principal {
         autorRepositorio.findAll().forEach(System.out::println);
     }
 
-    /* Consultas con fechas (Autores) */
-
     private void listarAutoresVivosEnAnoEspecifico() {
         System.out.println("Ingrese el año vivo de autor(es) que desea buscar");
         var anoVivo = teclado.nextLine();
@@ -133,25 +131,17 @@ public class Principal {
             System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
     }
+    private void listarLibrosPorIdioma() {
+        System.out.println("Ingrese el idioma que desea buscar los libros");
+        var idioma = teclado.nextLine();
 
-
-    private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
-        // Cantidad de libros por idiomas
-        Map<List<String>, Long> librosPorIdioma = repositorio.findAll().stream()
-                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.counting()
-                ));
-
-        System.out.println("Cantidad de libros por idiomas");
-        librosPorIdioma.forEach((idioma, totalLibros) ->
-                System.out.println(idioma + ": " + totalLibros)); //
-
-        // Cantidad de descargas por idiomas
-        Map<List<String>, Double> descargasPorIdioma = repositorio.findAll().stream()
-                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.summingDouble(Libro::getNumeroDeDescargas)
-                ));
-
-        System.out.println("Cantidad de libros descargados por idiomas");
-        descargasPorIdioma.forEach((idioma, totalDescargas) ->
-                System.out.println(idioma + ": " + totalDescargas));
+        if (!idioma.isBlank()) {
+            List<Libro> librosPorIdioma = repositorio.findByIdiomaContainingIgnoreCase(idioma);
+            librosPorIdioma.forEach(libro -> {
+                System.out.println(libro.toString());
+            });
+        } else {
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
+        }
     }
 }
