@@ -137,12 +137,9 @@ public class Principal {
 
         if (!idioma.isBlank()) {
             List<Libro> librosPorIdioma = repositorio.findByIdiomaContainingIgnoreCase(idioma);
-
-            System.out.println("Cantidad de libros por idioma: " + librosPorIdioma.size());
-            System.out.println("Cantidad de descargas por idioma: " + librosPorIdioma.stream()
-                    .collect(Collectors.groupingBy(Libro::getIdioma,
-                            Collectors.summingDouble(Libro::getNumeroDeDescargas)
-            )).get(idioma));
+            librosPorIdioma.forEach(libro -> {
+                System.out.println(libro.toString());
+            });
         } else {
             System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
