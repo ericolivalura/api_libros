@@ -31,7 +31,7 @@ public class Principal {
             2- listar libros registrados
             3- listar autores registrados
             4- listar autores vivos en un determinado año
-            5- exhibir estadísticas de descargas por idioma
+            5- listar libros por idioma
             0 - salir
             """;
 
@@ -53,7 +53,7 @@ public class Principal {
                 case 2 -> listarLibrosRegistrados();
                 case 3 -> listarAutoresRegistrados();
                 case 4 -> listarAutoresVivosEnAnoEspecifico();
-                case 5 -> exhibirEstadisticasDeDescargasDeLosLibrosRegistrados();
+                case 5 -> listarLibrosPorIdioma();
                 case 0 -> System.out.println("Hasta luego...");
                 default -> System.out.println("Opcion invalida");
             }
@@ -131,7 +131,7 @@ public class Principal {
             System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
     }
-    private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
+    private void listarLibrosPorIdioma() {
         System.out.println("Ingrese el idioma que desea buscar los libros");
         var idioma = teclado.nextLine();
 
