@@ -36,7 +36,7 @@ public class Principal {
             7- listar autores por año de nacimiento
             8- listar autores por intervalo de años
             9- listar autores vivos por año
-            10- exhibir estadísticas de descargas de los libros registrados
+            10- listar libros por idioma
             0 - salir
             """;
 
@@ -63,7 +63,7 @@ public class Principal {
                 case 7 -> listarAutoresPorAnoDeNacimiento(); //extra
                 case 8 -> listarAutoresPorIntervaloDeAnos(); //extra
                 case 9 -> listarAutoresVivosEnAnoEspecifico();
-                case 10 -> exhibirEstadisticasDeDescargasDeLosLibrosRegistrados();
+                case 10 -> listarLibrosPorIdioma();
                 case 0 -> System.out.println("Hasta luego...");
                 default -> System.out.println("Opcion invalida");
             }
@@ -228,23 +228,17 @@ public class Principal {
     }
 
 
-    private void exhibirEstadisticasDeDescargasDeLosLibrosRegistrados() {
-        // Cantidad de libros por idiomas
-        Map<List<String>, Long> librosPorIdioma = repositorio.findAll().stream()
-                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.counting()
-                ));
+    private void listarLibrosPorIdioma() {
+        System.out.println("Ingrese el idioma que desea buscar los libros");
+        var idioma = teclado.nextLine();
 
-        System.out.println("Cantidad de libros por idiomas");
-        librosPorIdioma.forEach((idioma, totalLibros) ->
-                System.out.println(idioma + ": " + totalLibros)); //
-
-        // Cantidad de descargas por idiomas
-        Map<List<String>, Double> descargasPorIdioma = repositorio.findAll().stream()
-                .collect(Collectors.groupingBy(Libro::getIdiomas, Collectors.summingDouble(Libro::getNumeroDeDescargas)
-                ));
-
-        System.out.println("Cantidad de libros descargados por idiomas");
-        descargasPorIdioma.forEach((idioma, totalDescargas) ->
-                System.out.println(idioma + ": " + totalDescargas));
+        if (!idioma.isBlank()) {
+            List<Libro> librosPorIdioma = repositorio.findByIdiomaContainingIgnoreCase(idioma);
+            librosPorIdioma.forEach(libro -> {
+                System.out.println(libro.toString());
+            });
+        } else {
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
+        }
     }
 }
