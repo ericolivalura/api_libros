@@ -14,7 +14,7 @@ public class Libro {
     private String titulo;
     @ManyToOne()
     private Autor autor;
-    private List<String> idiomas;
+    private String idioma;
     private Double numeroDeDescargas;
 
     public Libro() {
@@ -23,7 +23,7 @@ public class Libro {
     public Libro(DatosLibros datos, Autor autor) {
         this.titulo = datos.titulo();
         this.autor = autor;
-        this.idiomas = datos.idiomas();
+        this.idioma = datos.idiomas().get(0);
         this.numeroDeDescargas = datos.numeroDeDescargas();
     }
 
@@ -35,8 +35,8 @@ public class Libro {
         return titulo;
     }
 
-    public List<String> getIdiomas() {
-        return idiomas;
+    public String getIdioma() {
+        return idioma;
     }
 
     public Double getNumeroDeDescargas() {
@@ -48,7 +48,7 @@ public class Libro {
         return "----- LIBRO -----" +
                 "\n Titulo: " + titulo +
                 "\n Autor: " + autor.getNombre() +
-                "\n Idiomas: " + idiomas +
+                "\n Idioma: " + idioma +
                 "\n Numero de descargas: " + numeroDeDescargas +
                 "\n-----------------\n";
     }
