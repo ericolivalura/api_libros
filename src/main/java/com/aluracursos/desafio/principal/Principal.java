@@ -33,8 +33,7 @@ public class Principal {
             3- listar autores registrados
             4- listar autores vivos en un determinado año
             5- listar libros por idioma
-            0 - salir
-            """;
+            0 - salir""";
 
     public Principal(LibroRepository repositorio, AutorRepository autorRepository) {
         this.repositorio = repositorio;
@@ -135,12 +134,11 @@ public class Principal {
 
     private void listarLibrosPorIdioma() {
         var preguntaIdioma = """
-                Ingrese el idioma que desea buscar los libros:
+                Ingrese el idioma para buscar los libros:
                 es- español
                 en- inglés
                 fr- francés
-                pt- portugués
-                """;
+                pt- portugués""";
         System.out.println(preguntaIdioma);
         var idioma = teclado.nextLine();
 
