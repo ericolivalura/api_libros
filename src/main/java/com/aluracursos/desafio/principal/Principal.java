@@ -8,8 +8,9 @@ import com.aluracursos.desafio.service.ConvierteDatos;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 
 public class Principal {
 
@@ -131,17 +132,27 @@ public class Principal {
             System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
         }
     }
+
     private void listarLibrosPorIdioma() {
-        System.out.println("Ingrese el idioma que desea buscar los libros");
+        var preguntaIdioma = """
+                Ingrese el idioma que desea buscar los libros:
+                es- español
+                en- inglés
+                fr- francés
+                pt- portugués
+                """;
+        System.out.println(preguntaIdioma);
         var idioma = teclado.nextLine();
 
         if (!idioma.isBlank()) {
-            List<Libro> librosPorIdioma = repositorio.findByIdiomaContainingIgnoreCase(idioma);
-            librosPorIdioma.forEach(libro -> {
-                System.out.println(libro.toString());
-            });
+            List<Libro> librosPorIdioma = repositorio.findByIdiomaEqualsIgnoreCase(idioma);
+            if (librosPorIdioma.isEmpty()) {
+                System.out.println("No hay libros en ese idioma en la base de datos.");
+            } else {
+                librosPorIdioma.forEach(System.out::println);
+            }
         } else {
-            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese un numero entero válido.");
+            System.out.println("Campo de texto vacío, por favor, inténtelo de nuevo e ingrese una opción válida.");
         }
     }
 }

@@ -2,8 +2,6 @@ package com.aluracursos.desafio.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-
 @Entity
 @Table(name = "libros")
 public class Libro {
